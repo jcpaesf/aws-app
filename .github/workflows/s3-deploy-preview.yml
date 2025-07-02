@@ -54,4 +54,8 @@ jobs:
           aws s3 cp cloudfront.txt s3://${{ env.PREVIEW_BUCKET }}/cloudfront.txt
 
       - name: Output Preview URL
-        run: echo "Preview URL: https://${{ steps.cloudfront.outputs.distribution_id }}.cloudfront.net"
+        env:
+          PREVIEW_URL: https://${{ steps.cloudfront.outputs.distribution_id }}.cloudfront.net
+        run: |
+          echo "Preview URL: $PREVIEW_URL"
+
