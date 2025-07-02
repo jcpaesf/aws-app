@@ -1,0 +1,44 @@
+name: Deploy Vite Preview to GitHub Pages
+
+on:
+  push:
+    branches-ignore:
+      - main
+
+permissions:
+  contents: write  # ✅ gives the action permission to push
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build app with branch path
+        run: |
+          echo "Building for branch: ${{ github.ref_name }}"
+          BRANCH_NAME=${{ github.ref_name }} npm run build
+
+      - name: Prepare subfolder for branch
+        run: |
+          mkdir -p preview/${{ github.ref_name }}
+          cp -r dist/* preview/${{ github.ref_name }}/
+
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: deploy-preview
+          publish_dir: ./preview
+      - name: Log deployed preview URL
+        run: |
+          echo "✅ Preview deployed at:"
+          echo "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/preview/${{ github.ref_name }}/"
