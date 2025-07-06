@@ -1,15 +1,15 @@
 name: Production CI/CD - On push/merge to main branch
 
 on:
-  push:
-    branches:
-      - 'main'
   pull_request:
+    types:
+      - closed
     branches:
       - main
 
 jobs:
   deploy:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
